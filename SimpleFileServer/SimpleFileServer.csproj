@@ -42,15 +42,12 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BadRequestResponse.cs" />
     <Compile Include="BasicServer.cs" />
-    <Compile Include="CrossDomainResponse.cs" />
     <Compile Include="DeleteFileResponse.cs" />
     <Compile Include="DirectoryResponse.cs" />
     <Compile Include="GetFileResponse.cs" />
@@ -63,6 +60,7 @@
     <Compile Include="HttpListenerUtil.cs" />
     <Compile Include="IndexResponse.cs" />
     <Compile Include="IServerResponse.cs" />
+    <Compile Include="MultipartFormData.cs" />
     <Compile Include="PostFileResponse.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

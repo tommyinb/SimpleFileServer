@@ -17,11 +17,10 @@ namespace SimpleFileServer
         public BasicServer(int port, string directory = ".")
         {
             Responses = new List<IServerResponse>();
-            Responses.Add(new IndexResponse(directory));
-            Responses.Add(new CrossDomainResponse());
             Responses.Add(new DeleteFileResponse(directory));
             Responses.Add(new GetFileResponse(directory));
             Responses.Add(new PostFileResponse(directory));
+            Responses.Add(new IndexResponse(directory));
             Responses.Add(new DirectoryResponse(directory));
             Responses.Add(new BadRequestResponse());
 
