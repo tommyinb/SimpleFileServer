@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace SimpleFileServer
@@ -24,33 +24,48 @@ namespace SimpleFileServer
 
         public async Task Response(HttpListenerContext context)
         {
-            var streamContent = new StreamContent(context.Request.InputStream);
-            if (streamContent.IsMimeMultipartContent())
-            {
-                var saveTexts = new List<string>();
+            var localFilePath = context.Request.MapFilePath(directory);
 
-                var multipart = await streamContent.ReadAsMultipartAsync();
-                var fileParts = multipart.Contents.Where(t => t.Headers.ContentDisposition.FileName != null);
-                foreach (var filePart in fileParts)
+            if (context.Request.ContentType.Contains("multipart/form-data"))
+            {
+                var fileBytes = await GetBytesFromMultipart(context.Request);
+
+                if (fileBytes == null)
                 {
-                    var filePath = Path.Combine(directory, filePart.Headers.ContentDisposition.FileName);
-                    var fileBytes = await filePart.ReadAsByteArrayAsync();
-
-                    var saveText = SaveFile(filePath, fileBytes);
-                    saveTexts.Add(saveText);
+                    await context.Response.WriteResultAsync(HttpStatusCode.BadRequest, "no file provided");
+                    return;
                 }
-
-                var responseText = string.Join("\r\n", saveTexts);
-                await context.Response.WriteTextAsync(responseText);
-            }
-            else
-            {
-                var localFilePath = context.Request.MapFilePath(directory);
-                var fileBytes = await streamContent.ReadAsByteArrayAsync();
 
                 var saveText = SaveFile(localFilePath, fileBytes);
                 await context.Response.WriteTextAsync(saveText);
             }
+            else
+            {
+                var fileBytes = await context.Request.InputStream.ReadToEndAsync();
+
+                var saveText = SaveFile(localFilePath, fileBytes);
+                await context.Response.WriteTextAsync(saveText);
+            }
+        }
+        private async Task<byte[]> GetBytesFromMultipart(HttpListenerRequest request)
+        {
+            var multiparts = await MultipartFormData.ParseAsync(request);
+
+            var multipart = multiparts.FirstOrDefault(t =>
+            {
+                if (t.Headers.ContainsKey("Content-Disposition") == false) return false;
+
+                var contentDispositionText = t.Headers["Content-Disposition"];
+                var contentDispositionParts = contentDispositionText.Split(new[] { "; ", ";" }, StringSplitOptions.RemoveEmptyEntries);
+
+                var fileNameMatches = contentDispositionParts.Select(s =>
+                    Regex.Match(s, @"^filename=[""']?(?<fileName>[^""']+)[""']?$"));
+                return fileNameMatches.Any(s => s.Success);
+            });
+
+            if (multipart == null) return null;
+
+            return multipart.Data;
         }
         private string SaveFile(string filePath, byte[] fileBytes)
         {
