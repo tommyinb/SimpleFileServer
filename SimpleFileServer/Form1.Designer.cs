@@ -55,7 +55,7 @@
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(257, 93);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(257, 101);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
             // countTimeLabel
@@ -65,7 +65,7 @@
             this.countTimeLabel.ForeColor = System.Drawing.SystemColors.Highlight;
             this.countTimeLabel.Location = new System.Drawing.Point(5, 0);
             this.countTimeLabel.Name = "countTimeLabel";
-            this.countTimeLabel.Size = new System.Drawing.Size(247, 66);
+            this.countTimeLabel.Size = new System.Drawing.Size(247, 72);
             this.countTimeLabel.TabIndex = 0;
             this.countTimeLabel.Text = "00:01:23";
             this.countTimeLabel.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
@@ -81,7 +81,7 @@
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.Controls.Add(this.currTimeLabel, 1, 0);
             this.tableLayoutPanel2.Controls.Add(this.label3, 0, 0);
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(48, 71);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(48, 78);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -126,17 +126,17 @@
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(257, 93);
+            this.ClientSize = new System.Drawing.Size(257, 101);
             this.Controls.Add(this.tableLayoutPanel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "Form1";
-            this.Text = "File Server";
+            this.Text = "Simple File Server";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Resize += new System.EventHandler(this.Form1_Resize);

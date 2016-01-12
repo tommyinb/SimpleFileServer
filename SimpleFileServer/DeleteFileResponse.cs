@@ -18,24 +18,21 @@ namespace SimpleFileServer
 
         public bool IsValid(HttpListenerRequest request)
         {
-            var relativeFilePath = request.Url.LocalPath.TrimStart('/').Replace("/", @"\");
-            var fileExtension = Path.GetExtension(relativeFilePath);
+            var validHeader = request.HttpMethod == "DELETE"
+                || request.Url.Query == "?delete"
+                || request.Url.Query == "?remove";
 
-            var localFilePath = Path.Combine(directory, relativeFilePath);
-            if (File.Exists(localFilePath))
-            {
-                return request.Url.Query == "?delete"
-                    || request.Url.Query == "?remove";
-            }
-            else
-            {
-                return false;
-            }
+            if (validHeader == false) return false;
+
+            var localFilePath = request.MapFilePath(directory);
+
+            if (File.Exists(localFilePath) == false) return false;
+
+            return true;
         }
         public async Task Response(HttpListenerContext context)
         {
-            var relativeFilePath = context.Request.Url.LocalPath.TrimStart('/').Replace("/", @"\");
-            var localFilePath = Path.Combine(directory, relativeFilePath);
+            var localFilePath = context.Request.MapFilePath(directory);
 
             try
             {

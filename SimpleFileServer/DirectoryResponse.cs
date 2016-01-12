@@ -18,15 +18,13 @@ namespace SimpleFileServer
 
         public bool IsValid(HttpListenerRequest request)
         {
-            var relativePath = request.Url.LocalPath.TrimStart('/').Replace("/", @"\");
-            var localPath = Path.Combine(directory, relativePath);
+            var localPath = request.MapFilePath(directory);
 
             return Directory.Exists(localPath);
         }
         public async Task Response(HttpListenerContext context)
         {
-            var relativePath = context.Request.Url.LocalPath.TrimStart('/').Replace("/", @"\");
-            var localPath = Path.Combine(directory, relativePath);
+            var localPath = context.Request.MapFilePath(directory);
 
             var type = context.Request.QueryString["type"] ?? "file";
             switch (type)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,36 +19,56 @@ namespace SimpleFileServer
 
         public bool IsValid(HttpListenerRequest request)
         {
-            if (request.HttpMethod != "POST") return false;
-
-            var relativeFilePath = request.Url.LocalPath.TrimStart('/').Replace("/", @"\");
-            var fileExtension = Path.GetExtension(relativeFilePath);
-
-            return string.IsNullOrEmpty(fileExtension) == false;
+            return request.HttpMethod == "POST";
         }
+
         public async Task Response(HttpListenerContext context)
         {
-            var relativeFilePath = context.Request.Url.LocalPath.TrimStart('/').Replace("/", @"\");
-            var filePath = Path.Combine(directory, relativeFilePath);
+            var streamContent = new StreamContent(context.Request.InputStream);
+            if (streamContent.IsMimeMultipartContent())
+            {
+                var saveTexts = new List<string>();
 
+                var multipart = await streamContent.ReadAsMultipartAsync();
+                var fileParts = multipart.Contents.Where(t => t.Headers.ContentDisposition.FileName != null);
+                foreach (var filePart in fileParts)
+                {
+                    var filePath = Path.Combine(directory, filePart.Headers.ContentDisposition.FileName);
+                    var fileBytes = await filePart.ReadAsByteArrayAsync();
+
+                    var saveText = SaveFile(filePath, fileBytes);
+                    saveTexts.Add(saveText);
+                }
+
+                var responseText = string.Join("\r\n", saveTexts);
+                await context.Response.WriteTextAsync(responseText);
+            }
+            else
+            {
+                var localFilePath = context.Request.MapFilePath(directory);
+                var fileBytes = await streamContent.ReadAsByteArrayAsync();
+
+                var saveText = SaveFile(localFilePath, fileBytes);
+                await context.Response.WriteTextAsync(saveText);
+            }
+        }
+        private string SaveFile(string filePath, byte[] fileBytes)
+        {
             var directoryPath = Path.GetDirectoryName(filePath);
             Directory.CreateDirectory(directoryPath);
 
             var oldBytes = File.Exists(filePath) ? File.ReadAllBytes(filePath) : null;
-            var newBytes = await context.Request.InputStream.ReadToEndAsync();
 
-            File.WriteAllBytes(filePath, newBytes);
+            File.WriteAllBytes(filePath, fileBytes);
 
-            var units = new[] { Tuple.Create(1048576, "MB"), Tuple.Create(1024, "KB"), Tuple.Create(1, "B") };
-            var getByteText = new Func<byte[], string>(t =>
-            {
-                var unit = units.FirstOrDefault(s => t.Length >= s.Item1);
-                return unit != null ? t.Length / unit.Item1 + unit.Item2 : "0B";
-            });
+            var getSizeText = new Func<int, string>(t =>
+                t >= 1073741824 ? (int)Math.Round((double)t / 1073741824) + "GB"
+                : t >= 1048576 ? (int)Math.Round((double)t / 1048576) + "MB"
+                : t >= 1024 ? (int)Math.Round((double)t / 1024) + "KB" : t + "B");
 
-            var oldByteText = oldBytes != null ? getByteText(oldBytes) : "N/A";
-            var newByteText = getByteText(newBytes);
-            await context.Response.WriteTextAsync(filePath + " (" + oldByteText + " -> " + newByteText + ")");
+            var oldByteText = oldBytes != null ? getSizeText(oldBytes.Length) : "N/A";
+            var fileByteText = getSizeText(fileBytes.Length);
+            return filePath + " (" + oldByteText + " -> " + fileByteText + ")";
         }
     }
 }

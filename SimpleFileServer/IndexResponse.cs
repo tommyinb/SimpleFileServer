@@ -13,28 +13,32 @@ namespace SimpleFileServer
         public IndexResponse(string directory)
         {
             this.directory = directory;
-
-            indexFiles.Add("index.html");
-            indexFiles.Add("index.htm");
         }
+        
         private string directory;
-        private List<string> indexFiles = new List<string>();
+        private string GetIndexFileName()
+        {
+            var indexNames = new[] { "index.html", "index.htm", "index.txt" };
+
+            return indexNames.FirstOrDefault(t =>
+            {
+                var indexPath = Path.Combine(directory, t);
+                return File.Exists(indexPath);
+            });
+        }
 
         public bool IsValid(HttpListenerRequest request)
         {
             return request.Url.LocalPath == "/"
-                && request.QueryString.Count <= 0
-                && indexFiles.Select(t => Path.Combine(directory, t)).Any(File.Exists);
+                && GetIndexFileName() != null;
         }
         public async Task Response(HttpListenerContext context)
         {
-            var indexFile = indexFiles.Select(t => Path.Combine(directory, t)).FirstOrDefault(File.Exists);
-
-            if (indexFile != null)
+            var fileName = GetIndexFileName();
+            if (fileName != null)
             {
-                var fileResponse = new GetFileResponse(directory);
-
-                await fileResponse.Response(context.Response, indexFile);
+                var filePath = Path.Combine(directory, fileName);
+                await GetFileResponse.Response(context.Response, filePath);
             }
             else
             {
