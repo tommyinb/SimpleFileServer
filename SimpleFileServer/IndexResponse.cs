@@ -29,8 +29,8 @@ namespace SimpleFileServer
 
         public bool IsValid(HttpListenerRequest request)
         {
-            return request.Url.LocalPath == "/"
-                && GetIndexFileName() != null;
+            return request.HttpMethod == "GET"
+                && request.Url.LocalPath == "/";
         }
         public async Task Response(HttpListenerContext context)
         {

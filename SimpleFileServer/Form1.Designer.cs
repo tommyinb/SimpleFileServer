@@ -121,7 +121,7 @@
             // notifyIcon
             // 
             this.notifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon.Icon")));
-            this.notifyIcon.Text = "File Server";
+            this.notifyIcon.Text = "Simple File Server";
             this.notifyIcon.Click += new System.EventHandler(this.notifyIcon_Click);
             // 
             // Form1
