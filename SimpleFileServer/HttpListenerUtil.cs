@@ -37,6 +37,12 @@ namespace SimpleFileServer
 
             response.OutputStream.Write(bytes, 0, bytes.Length);
         }
+        public static async Task WriteResultAsync(this HttpListenerResponse response, HttpStatusCode statusCode, string text)
+        {
+            response.StatusCode = (int)statusCode;
+
+            await WriteTextAsync(response, text);
+        }
 
         public static string MapFilePath(this HttpListenerRequest request, string rootDirectory)
         {

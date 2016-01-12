@@ -16,9 +16,7 @@ namespace SimpleFileServer
 
         public async Task Response(HttpListenerContext context)
         {
-            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-
-            await context.Response.WriteTextAsync("bad request");
+            await context.Response.WriteResultAsync(HttpStatusCode.BadRequest, "bad request");
         }
     }
 }
