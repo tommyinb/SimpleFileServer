@@ -19,7 +19,15 @@ namespace SimpleFileServer
 
         public bool IsValid(HttpListenerRequest request)
         {
-            return request.HttpMethod == "POST";
+            if (request.HttpMethod == "POST")
+            {
+                var localFilePath = request.MapFilePath(directory);
+                return Path.GetExtension(localFilePath) != string.Empty;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public async Task Response(HttpListenerContext context)
