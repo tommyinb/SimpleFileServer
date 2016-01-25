@@ -8,13 +8,12 @@ using System.Text;
 using System.Linq;
 using System.Windows.Forms;
 using System.Net;
+using System.IO;
 
 namespace SimpleFileServer
 {
     public partial class Form1 : Form
     {
-        private int port;
-        private const int defaultPort = 8892;
         private BasicServer server = null;
 
         public Form1()
@@ -25,12 +24,13 @@ namespace SimpleFileServer
         {
             var arguments = Environment.GetCommandLineArgs();
             port = arguments.Length > 1 ? int.Parse(arguments[1]) : defaultPort;
+            directory = arguments.Length > 2 ? arguments[2] : ".";
 
             notifyIcon.Text += ": " + port;
 
             try
             {
-                server = new BasicServer(port);
+                server = new BasicServer(port, directory);
             }
             catch (Exception ex)
             {
@@ -96,13 +96,17 @@ namespace SimpleFileServer
             WindowState = FormWindowState.Normal;
         }
 
+        private int port;
+        private const int defaultPort = 8892;
+        private string directory;
         private void countTimeLabel_Click(object sender, EventArgs e)
         {
             if (server != null)
             {
                 Process.Start("http://localhost:" + port + "/");
 
-                Process.Start(Application.StartupPath);
+                var directoryPath = Path.GetFullPath(directory);
+                Process.Start(directoryPath);
             }
         }
     }
