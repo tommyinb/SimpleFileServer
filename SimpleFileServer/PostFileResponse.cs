@@ -47,6 +47,15 @@ namespace SimpleFileServer
                 var saveText = SaveFile(localFilePath, fileBytes);
                 await context.Response.WriteTextAsync(saveText);
             }
+            else if (context.Request.Headers["Content-Transfer-Encoding"] == "base64")
+            {
+                var inputBytes = await context.Request.InputStream.ReadToEndAsync();
+                var inputText = Encoding.ASCII.GetString(inputBytes);
+
+                var fileBytes = Convert.FromBase64String(inputText);
+                var saveText = SaveFile(localFilePath, fileBytes);
+                await context.Response.WriteTextAsync(saveText);
+            }
             else
             {
                 var fileBytes = await context.Request.InputStream.ReadToEndAsync();
