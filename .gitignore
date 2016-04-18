@@ -1,7 +1,6 @@
 /*.suo
-/SimpleFileServer/bin
 /SimpleFileServer/obj
-/SimpleFileUploader/obj
-/SimpleFileUploader/bin
+/SimpleFileServer/bin/Debug
+/SimpleFileServer/bin/Release
 /.svn
 /SimpleFileServer/SimpleFileServer.csproj.user
