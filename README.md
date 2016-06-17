@@ -5,7 +5,7 @@
 * Framework: .NET 4.5
 
 ## Simple Usage
-It is designed to let web clients use GET/POST/DELETE requests to access files. eg.
+It is designed to let web client use GET/POST/DELETE to access files. eg.
 * [POST] http://localhost:8892/example1.png
 * [GET] http://localhost:8892/example2.txt
 * [DELETE] http://localhost:8892/example3.jpg
